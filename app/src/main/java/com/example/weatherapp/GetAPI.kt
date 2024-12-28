@@ -1,5 +1,6 @@
 package com.example.weatherapp
 
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Response
@@ -33,6 +34,10 @@ interface GetAPI {
 
         val getAPI: GetAPI by lazy {
             retrofit.create(GetAPI::class.java)
+        }
+
+        val weatherAdapter: JsonAdapter<WeatherDataResponse> by lazy {
+            moshi.adapter(WeatherDataResponse::class.java)
         }
     }
 }
