@@ -1,9 +1,11 @@
-package com.example.weatherapp
+package com.example.weatherapp.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapp.api.GetAPI
+import com.example.weatherapp.database.CityDataResponse
 import kotlinx.coroutines.launch
 import retrofit2.Response
 

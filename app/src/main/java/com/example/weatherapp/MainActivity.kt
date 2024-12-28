@@ -14,7 +14,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.weatherapp.api.GetAPI
+import com.example.weatherapp.database.WeatherDataResponse
 import com.example.weatherapp.databinding.ActivityMainBinding
+import com.example.weatherapp.viewmodel.CityRepository
+import com.example.weatherapp.viewmodel.CityViewModel
+import com.example.weatherapp.viewmodel.WeatherRepository
+import com.example.weatherapp.viewmodel.WeatherViewModel
 import com.google.android.gms.location.*
 import com.squareup.picasso.Picasso
 import java.util.*

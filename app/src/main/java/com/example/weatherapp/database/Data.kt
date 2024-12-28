@@ -1,4 +1,4 @@
-package com.example.weatherapp
+package com.example.weatherapp.database
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
