@@ -4,10 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Geocoder
+import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowInsets
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -43,7 +46,6 @@ class MainActivity : AppCompatActivity() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         checkLocationPermission()
-        updateBackground()
         onAddCityButtonClicked()
         checkInputComplete()
         setupTouchListener()
@@ -67,9 +69,15 @@ class MainActivity : AppCompatActivity() {
             )
         }
         else{
+            updateBackground()
             loadWeatherData()
             refreshWeatherData()
         }
+    }
+
+    private fun isGpsEnabled(): Boolean {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
     override fun onRequestPermissionsResult(
@@ -81,6 +89,7 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == 100) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                updateBackground()
                 loadWeatherData()
                 refreshWeatherData()
             } else {
@@ -126,7 +135,11 @@ class MainActivity : AppCompatActivity() {
         if (weatherData != null) {
             updateWeatherUI(weatherData)
         } else {
-            currentWeatherData()
+            if (isGpsEnabled()){
+                currentWeatherData()
+            }else{
+                Toast.makeText(this, "GPS is required for checking weather", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -155,7 +168,7 @@ class MainActivity : AppCompatActivity() {
                     try {
                         val addresses = geocoder.getFromLocation(lat, lon, 1)
                         if (!addresses.isNullOrEmpty()) {
-                            val cityName = addresses[0].locality
+                            val cityName = addresses[0].adminArea
                             currentLocation = cityName
                         } else {
                             Toast.makeText(this@MainActivity, "Error connection", Toast.LENGTH_SHORT).show()
@@ -177,9 +190,6 @@ class MainActivity : AppCompatActivity() {
         weatherViewModel.weatherData.observe(this) { weatherData ->
             weatherData.cityName = currentLocation
             updateWeatherUI(weatherData)
-            binding.cityInput.clearFocus()
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(binding.cityInput.windowToken, 0)
         }
     }
 
@@ -228,6 +238,9 @@ class MainActivity : AppCompatActivity() {
         binding.cityInput.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 getCityData(binding.cityInput.text.toString())
+                binding.cityInput.clearFocus()
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(binding.cityInput.windowToken, 0)
                 return@setOnEditorActionListener true
             }
             false
